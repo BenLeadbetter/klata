@@ -25,6 +25,10 @@ use tui::{
         Span,
         Spans,
     },
+    style::{
+        Color,
+        Style,
+    },
     widgets::{
        Block, 
        Borders,
@@ -34,9 +38,13 @@ use tui::{
     Terminal,
 };
 
+use crate::text::{
+    Character,
+    CharacterStatus,
+};
+
 pub struct App {
-    text: String,
-    input_text: String,
+    text: crate::text::Text,
 }
 
 pub type AppError = std::boxed::Box<dyn std::error::Error>;
@@ -45,23 +53,28 @@ impl App {
     pub fn from_file<P: AsRef<std::path::Path>>(
         path: P,
     ) -> Result<App, AppError> {
+        let file_content = std::str::from_utf8(&std::fs::read(path)?)?.to_string();
         Ok(App {
-            text: std::str::from_utf8(&std::fs::read(path)?)?
-                .to_string(),
-            input_text: String::new(),
+            text: crate::text::Text::from_string(file_content),
         })
     }
 
-    pub fn run<W: std::io::Write>(self, buffer: W) -> Result<(), AppError> {
+    pub fn run<W: std::io::Write>(mut self, buffer: W) -> Result<(), AppError> {
             let mut terminal = create_terminal(buffer)?;
         loop {
             terminal.draw(|f| self.ui(f))?;
             let event = event::read()?;
             match event  {
-                Event::Key(key) => {
-                    if let KeyCode::Esc = key.code {
-                        break;
+                Event::Key(key) => match key.code {
+                    KeyCode::Esc => { break; },
+                    KeyCode::Char(c) => {
+                        self.text.type_character(c);
+                    },
+                    KeyCode::Backspace => { 
+                        self.text.backspace();
                     }
+                    _ => {},
+
                 },
                 _ => {}
             }
@@ -74,7 +87,35 @@ impl App {
         let size = f.size();
         let paragraph_block = Block::default()
             .borders(Borders::ALL);
-        let paragraph = Paragraph::new(Spans::from(Span::raw(self.text.clone())))
+        let to_styled_char = |(i, c): (usize, &crate::text::Character)| -> Span {
+            let style = Style {
+                fg: match c.status() {
+                    crate::text::CharacterStatus::Untyped => { Some(Color::DarkGray) },
+                    crate::text::CharacterStatus::Correct => { Some(Color::White) },
+                    crate::text::CharacterStatus::Corrected => { Some(Color::Green) },
+                    crate::text::CharacterStatus::Wrong => { Some(Color::Red) },
+                },
+                bg: {
+                    if i == self.text.cursor() {
+                        Some(Color::White)
+                    } else if c.value() == ' ' && c.status() == CharacterStatus::Corrected {
+                        Some(Color::Green)
+                    } else if c.value() == ' ' && c.status() == CharacterStatus::Wrong {
+                        Some(Color::Red)
+                    } else {
+                        None
+                    }
+                },
+                ..Style::default()
+            };
+            Span::styled(c.value().to_string(), style)
+        };
+        let styled_characters = self.text
+            .characters()
+            .enumerate()
+            .map(to_styled_char)
+            .collect::<Vec<_>>();
+        let paragraph = Paragraph::new(Spans::from(styled_characters))
             .block(paragraph_block)
             .alignment(Alignment::Left)
             .wrap(Wrap { trim: true });
