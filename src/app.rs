@@ -39,7 +39,6 @@ use tui::{
 };
 
 use crate::text::{
-    Character,
     CharacterStatus,
 };
 
