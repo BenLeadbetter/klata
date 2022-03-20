@@ -47,15 +47,14 @@ fn incorrectly_reattempted_character_is_wrong() {
 }
 
 #[test]
-fn quotation_mark_character_neutral_quotation_mark_typed_register_correct() {
-    let mut character = Character::new('\u{201c}');
-    character.attempt('\"');
-    assert_eq!(character.status(), CharacterStatus::Correct);
+fn text_from_string_with_directed_speech_marks_neutralised() {
+    let text = Text::from_string("\u{201c}Hello, World!\u{201d}".to_string());
+    assert_eq!(text.buffer[0].value(), '\u{0022}');
+    assert_eq!(text.buffer[14].value(), '\u{0022}');
 }
 
 #[test]
-fn right_single_quotation_character_neutral_single_quotation_typed_correct() {
-    let mut character = Character::new('\u{2019}');
-    character.attempt('\'');
-    assert_eq!(character.status(), CharacterStatus::Correct);
+fn text_from_string_with_directed_apostrophes_neutralised() {
+    let text = Text::from_string("Ben\u{2019}s".to_string());
+    assert_eq!(text.buffer[3].value(), '\'');
 }
