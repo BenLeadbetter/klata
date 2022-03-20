@@ -45,3 +45,16 @@ fn incorrectly_reattempted_character_is_wrong() {
     character.attempt('z');
     assert_eq!(character.status(), CharacterStatus::Wrong);
 }
+
+#[test]
+fn text_from_string_with_directed_speech_marks_neutralised() {
+    let text = Text::from_string("\u{201c}Hello, World!\u{201d}".to_string());
+    assert_eq!(text.buffer[0].value(), '\u{0022}');
+    assert_eq!(text.buffer[14].value(), '\u{0022}');
+}
+
+#[test]
+fn text_from_string_with_directed_apostrophes_neutralised() {
+    let text = Text::from_string("Ben\u{2019}s".to_string());
+    assert_eq!(text.buffer[3].value(), '\'');
+}
