@@ -45,3 +45,17 @@ fn incorrectly_reattempted_character_is_wrong() {
     character.attempt('z');
     assert_eq!(character.status(), CharacterStatus::Wrong);
 }
+
+#[test]
+fn quotation_mark_character_neutral_quotation_mark_typed_register_correct() {
+    let mut character = Character::new('\u{201c}');
+    character.attempt('\"');
+    assert_eq!(character.status(), CharacterStatus::Correct);
+}
+
+#[test]
+fn right_single_quotation_character_neutral_single_quotation_typed_correct() {
+    let mut character = Character::new('\u{2019}');
+    character.attempt('\'');
+    assert_eq!(character.status(), CharacterStatus::Correct);
+}
