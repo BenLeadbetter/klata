@@ -14,32 +14,15 @@ use crossterm::{
     },
 };
 
+use crate::widgets::ParagraphWidget;
+
 use tui::{
     backend::{
         Backend,
         CrosstermBackend,
     },
     Frame,
-    layout::Alignment,
-    text::{
-        Span,
-        Spans,
-    },
-    style::{
-        Color,
-        Style,
-    },
-    widgets::{
-       Block, 
-       Borders,
-       Paragraph,
-       Wrap,
-    },
     Terminal,
-};
-
-use crate::text::{
-    CharacterStatus,
 };
 
 pub struct App {
@@ -83,42 +66,7 @@ impl App {
     }
 
     fn ui<B: Backend>(&self, f: &mut Frame<B>) {
-        let size = f.size();
-        let paragraph_block = Block::default()
-            .borders(Borders::ALL);
-        let to_styled_char = |(i, c): (usize, &crate::text::Character)| -> Span {
-            let style = Style {
-                fg: match c.status() {
-                    crate::text::CharacterStatus::Untyped => { Some(Color::DarkGray) },
-                    crate::text::CharacterStatus::Correct => { Some(Color::White) },
-                    crate::text::CharacterStatus::Corrected => { Some(Color::Green) },
-                    crate::text::CharacterStatus::Wrong => { Some(Color::Red) },
-                },
-                bg: {
-                    if i == self.text.cursor() {
-                        Some(Color::White)
-                    } else if c.value() == ' ' && c.status() == CharacterStatus::Corrected {
-                        Some(Color::Green)
-                    } else if c.value() == ' ' && c.status() == CharacterStatus::Wrong {
-                        Some(Color::Red)
-                    } else {
-                        None
-                    }
-                },
-                ..Style::default()
-            };
-            Span::styled(c.value().to_string(), style)
-        };
-        let styled_characters = self.text
-            .characters()
-            .enumerate()
-            .map(to_styled_char)
-            .collect::<Vec<_>>();
-        let paragraph = Paragraph::new(Spans::from(styled_characters))
-            .block(paragraph_block)
-            .alignment(Alignment::Left)
-            .wrap(Wrap { trim: true });
-        f.render_widget(paragraph, size);
+        f.render_widget(ParagraphWidget::new(&self.text), f.size());
     }
 }
 
