@@ -14,7 +14,7 @@ use crossterm::{
     },
 };
 
-use crate::widgets::ParagraphWidget;
+use crate::widgets::Paragraph;
 
 use tui::{
     backend::{
@@ -66,7 +66,7 @@ impl App {
     }
 
     fn ui<B: Backend>(&self, f: &mut Frame<B>) {
-        f.render_widget(ParagraphWidget::new(&self.text), f.size());
+        f.render_widget(Paragraph::new(&self.text), f.size());
     }
 }
 
