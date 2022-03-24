@@ -14,7 +14,7 @@ use crossterm::{
     },
 };
 
-use crate::widgets::Paragraph;
+use crate::widgets::paragraph::Paragraph;
 
 use tui::{
     backend::{
