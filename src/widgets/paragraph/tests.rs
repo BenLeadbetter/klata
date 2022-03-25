@@ -137,3 +137,27 @@ fn correctly_type_text_text_is_rendered_white() {
     assert_eq!(buffer.content[9].fg, tui::style::Color::White);
     assert_eq!(buffer.content[10].fg, tui::style::Color::White);
 }
+
+#[test]
+fn long_paragraphs_scroll_before_last_line() {
+    let mut text = text::Text::from_string("I am ok".to_string());
+    text.type_character('I');
+    text.type_character(' ');
+    text.type_character('a');
+    let paragraph = Paragraph::new(&text);
+    
+    let rect = tui::layout::Rect {
+        width: 4,
+        height: 4,
+        ..Default::default()
+    };
+    let mut buffer = tui::buffer::Buffer::empty(rect.clone());
+    paragraph.render(rect.clone(), &mut buffer);
+    
+    assert_eq!(buffer.content[5].symbol, 'a'.to_string());
+    assert_eq!(buffer.content[5].fg, tui::style::Color::White);
+    assert_eq!(buffer.content[6].symbol, 'm'.to_string());
+    assert_eq!(buffer.content[6].bg, tui::style::Color::White);
+    assert_eq!(buffer.content[9].symbol, 'o'.to_string());
+    assert_eq!(buffer.content[10].symbol, 'k'.to_string());
+}
