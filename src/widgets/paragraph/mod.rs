@@ -7,7 +7,7 @@ use tui::{
     layout::{ Alignment, Rect, },
     text::{ Span, Spans, },
     style::{ Color, Style, },
-    widgets::{ self, Block, Borders, Wrap,},
+    widgets::{ self, Block, Borders, BorderType, Wrap,},
 };
 
 pub struct Paragraph<'a> {
@@ -29,7 +29,7 @@ impl<'a> Paragraph<'a> {
 }
 
 fn to_styled_char<'a>(c: char, status: text::CharacterStatus, is_cursor: bool) -> Span<'a> {
-    Span{
+    Span {
         style: Style {
             fg: match status {
                 text::CharacterStatus::Untyped => { Some(Color::DarkGray) },
@@ -56,7 +56,9 @@ fn to_styled_char<'a>(c: char, status: text::CharacterStatus, is_cursor: bool) -
 
 impl<'a> tui::widgets::Widget for Paragraph<'a> {
     fn render(self, area: Rect, buf: &mut tui::buffer::Buffer) {
-        let paragraph_block = Block::default().borders(Borders::ALL);
+        let paragraph_block = Block::default()
+            .borders(Borders::ALL)
+            .border_type(BorderType::Rounded);
         let paragraph = widgets::Paragraph::new(self.characters)
             .block(paragraph_block)
             .alignment(Alignment::Left)
