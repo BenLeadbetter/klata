@@ -55,7 +55,6 @@ impl Data {
             .filter(|c| !c.is_ascii_alphanumeric())
             .filter(|c| !c.is_ascii_whitespace())
             .filter(|c| !c.is_ascii_punctuation())
-            .filter(|c| *c != '\n')
             .next() {
             return Err(Box::new(DataError::UnsupportedCharacter(c)));
         }
