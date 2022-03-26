@@ -55,19 +55,20 @@ impl Character {
     }
 }
 
-pub struct Text {
+pub struct TextModel {
     buffer: Vec<Character>,
     cursor: usize,
 }
 
-impl Text {
-    pub fn from_string(s: String) -> Text {
+impl TextModel {
+    pub fn from_string(mut s: String) -> TextModel {
+        s = neutralise_quotations(s);
         let buffer = s
             .chars()
             .map(|c| Character::new(c)) 
             .collect::<Vec<_>>();
         let cursor = 0;
-        Text {
+        TextModel {
             buffer,
             cursor,
         }
@@ -94,4 +95,16 @@ impl Text {
         self.cursor -= 1;
         self.buffer[self.cursor].erase();
     }
+}
+
+fn neutralise_quotations(s: String) -> String {
+    let mut ret = String::new();
+    for c in s.chars().into_iter() {
+        match c {
+            '\u{201c}' | '\u{201d}' => { ret.push('\u{0022}'); },
+            '\u{2018}' | '\u{2019}' => { ret.push('\u{0027}'); },
+            boring_char => { ret.push(boring_char); }
+        }
+    }
+    ret
 }

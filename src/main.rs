@@ -1,9 +1,13 @@
+use clap::Parser;
 use std::io;
 
 mod app;
-mod text;
+mod cli;
+mod text_model;
+mod widgets;
 
 fn main() -> Result<(), app::AppError> {
-    let app = app::App::from_file("mcmurphey.txt")?;
+    let cli_args = cli::Cli::parse();
+    let app = app::App::from_file(cli_args.file)?;
     app.run(io::stdout())
 }
