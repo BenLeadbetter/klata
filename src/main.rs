@@ -3,7 +3,7 @@ use std::io;
 
 mod app;
 mod cli;
-mod text;
+mod text_model;
 mod widgets;
 
 fn main() -> Result<(), app::AppError> {

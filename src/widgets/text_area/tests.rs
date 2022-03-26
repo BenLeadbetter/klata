@@ -3,8 +3,8 @@ use tui::widgets::Widget;
 
 #[test]
 fn paragraph_from_empty_text_renders_empty_framed_block() {
-    let text = text::Text::from_string("".to_string());
-    let paragraph = Paragraph::new(&text);
+    let text = text_model::TextModel::from_string("".to_string());
+    let paragraph = TextArea::new(&text);
     
     let rect = tui::layout::Rect {
         width: 4,
@@ -25,8 +25,8 @@ fn paragraph_from_empty_text_renders_empty_framed_block() {
 
 #[test]
 fn text_wraps_and_left_aligns() {
-    let text = text::Text::from_string("I am".to_string());
-    let paragraph = Paragraph::new(&text);
+    let text = text_model::TextModel::from_string("I am".to_string());
+    let paragraph = TextArea::new(&text);
     
     let rect = tui::layout::Rect {
         width: 4,
@@ -44,8 +44,8 @@ fn text_wraps_and_left_aligns() {
 
 #[test]
 fn untyped_text_rendered_grey() {
-    let text = text::Text::from_string("I am".to_string());
-    let paragraph = Paragraph::new(&text);
+    let text = text_model::TextModel::from_string("I am".to_string());
+    let paragraph = TextArea::new(&text);
     
     let rect = tui::layout::Rect {
         width: 4,
@@ -62,10 +62,10 @@ fn untyped_text_rendered_grey() {
 
 #[test]
 fn incorrect_text_rendered_red() {
-    let mut text = text::Text::from_string("I am".to_string());
+    let mut text = text_model::TextModel::from_string("I am".to_string());
     text.type_character('x');
 
-    let paragraph = Paragraph::new(&text);
+    let paragraph = TextArea::new(&text);
     
     let rect = tui::layout::Rect {
         width: 4,
@@ -80,12 +80,12 @@ fn incorrect_text_rendered_red() {
 
 #[test]
 fn corrected_text_rendered_green() {
-    let mut text = text::Text::from_string("I am".to_string());
+    let mut text = text_model::TextModel::from_string("I am".to_string());
     text.type_character('x');
     text.backspace();
     text.type_character('I');
 
-    let paragraph = Paragraph::new(&text);
+    let paragraph = TextArea::new(&text);
     
     let rect = tui::layout::Rect {
         width: 4,
@@ -100,8 +100,8 @@ fn corrected_text_rendered_green() {
 
 #[test]
 fn cursor_rendered_white_bg_grey_fg() {
-    let text = text::Text::from_string("I am".to_string());
-    let paragraph = Paragraph::new(&text);
+    let text = text_model::TextModel::from_string("I am".to_string());
+    let paragraph = TextArea::new(&text);
     
     let rect = tui::layout::Rect {
         width: 4,
@@ -118,12 +118,12 @@ fn cursor_rendered_white_bg_grey_fg() {
 
 #[test]
 fn correctly_type_text_text_is_rendered_white() {
-    let mut text = text::Text::from_string("I am".to_string());
+    let mut text = text_model::TextModel::from_string("I am".to_string());
     text.type_character('I');
     text.type_character(' ');
     text.type_character('a');
     text.type_character('m');
-    let paragraph = Paragraph::new(&text);
+    let paragraph = TextArea::new(&text);
     
     let rect = tui::layout::Rect {
         width: 4,

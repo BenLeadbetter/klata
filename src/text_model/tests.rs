@@ -48,13 +48,13 @@ fn incorrectly_reattempted_character_is_wrong() {
 
 #[test]
 fn text_from_string_with_directed_speech_marks_neutralised() {
-    let text = Text::from_string("\u{201c}Hello, World!\u{201d}".to_string());
+    let text = TextModel::from_string("\u{201c}Hello, World!\u{201d}".to_string());
     assert_eq!(text.buffer[0].value(), '\u{0022}');
     assert_eq!(text.buffer[14].value(), '\u{0022}');
 }
 
 #[test]
 fn text_from_string_with_directed_apostrophes_neutralised() {
-    let text = Text::from_string("Ben\u{2019}s".to_string());
+    let text = TextModel::from_string("Ben\u{2019}s".to_string());
     assert_eq!(text.buffer[3].value(), '\'');
 }

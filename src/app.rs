@@ -1,4 +1,4 @@
-use crate::widgets::paragraph::Paragraph;
+use crate::widgets::text_area::TextArea;
 
 use crossterm::{
     event::{
@@ -26,7 +26,7 @@ use tui::{
 };
 
 pub struct App {
-    text: crate::text::Text,
+    text: crate::text_model::TextModel,
 }
 pub type AppError = std::boxed::Box<dyn std::error::Error>;
 
@@ -36,7 +36,7 @@ impl App {
     ) -> Result<App, AppError> {
         let file_content = std::str::from_utf8(&std::fs::read(path)?)?.to_string();
         Ok(App {
-            text: crate::text::Text::from_string(file_content),
+            text: crate::text_model::TextModel::from_string(file_content),
         })
     }
 
@@ -65,7 +65,7 @@ impl App {
     }
 
     fn ui<B: Backend>(&self, f: &mut Frame<B>) {
-        f.render_widget(Paragraph::new(&self.text), f.size());
+        f.render_widget(TextArea::new(&self.text), f.size());
     }
 }
 
