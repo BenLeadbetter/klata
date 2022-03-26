@@ -55,20 +55,20 @@ impl Character {
     }
 }
 
-pub struct Text {
+pub struct TextModel {
     buffer: Vec<Character>,
     cursor: usize,
 }
 
-impl Text {
-    pub fn from_string(mut s: String) -> Text {
+impl TextModel {
+    pub fn from_string(mut s: String) -> TextModel {
         s = neutralise_quotations(s);
         let buffer = s
             .chars()
             .map(|c| Character::new(c)) 
             .collect::<Vec<_>>();
         let cursor = 0;
-        Text {
+        TextModel {
             buffer,
             cursor,
         }

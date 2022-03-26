@@ -1,1 +1,1 @@
-pub mod paragraph;
+pub mod text_area;

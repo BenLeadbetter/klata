@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests;
 
-use crate::text;
+use crate::text_model;
 
 use tui::{
     layout::{ Alignment, Rect, },
@@ -10,13 +10,13 @@ use tui::{
     widgets::{ self, Block, Borders, BorderType, Wrap,},
 };
 
-pub struct Paragraph<'a> {
+pub struct TextArea<'a> {
     characters: Spans<'a>,
 }
 
-impl<'a> Paragraph<'a> {
-    pub fn new(text: &text::Text) -> Paragraph<'a> {
-        Paragraph {
+impl<'a> TextArea<'a> {
+    pub fn new(text: &text_model::TextModel) -> TextArea<'a> {
+        TextArea {
             characters: Spans::<'a>::from(
                 text
                     .characters()
@@ -28,21 +28,21 @@ impl<'a> Paragraph<'a> {
     }
 }
 
-fn to_styled_char<'a>(c: char, status: text::CharacterStatus, is_cursor: bool) -> Span<'a> {
+fn to_styled_char<'a>(c: char, status: text_model::CharacterStatus, is_cursor: bool) -> Span<'a> {
     Span {
         style: Style {
             fg: match status {
-                text::CharacterStatus::Untyped => { Some(Color::DarkGray) },
-                text::CharacterStatus::Correct => { Some(Color::White) },
-                text::CharacterStatus::Corrected => { Some(Color::Green) },
-                text::CharacterStatus::Wrong => { Some(Color::Red) },
+                text_model::CharacterStatus::Untyped => { Some(Color::DarkGray) },
+                text_model::CharacterStatus::Correct => { Some(Color::White) },
+                text_model::CharacterStatus::Corrected => { Some(Color::Green) },
+                text_model::CharacterStatus::Wrong => { Some(Color::Red) },
             },
             bg: {
                 if is_cursor {
                     Some(Color::White)
-                } else if c == ' ' && status == text::CharacterStatus::Corrected {
+                } else if c == ' ' && status == text_model::CharacterStatus::Corrected {
                     Some(Color::Green)
-                } else if c == ' ' && status == text::CharacterStatus::Wrong {
+                } else if c == ' ' && status == text_model::CharacterStatus::Wrong {
                     Some(Color::Red)
                 } else {
                     None
@@ -54,7 +54,7 @@ fn to_styled_char<'a>(c: char, status: text::CharacterStatus, is_cursor: bool) -
     }
 }
 
-impl<'a> tui::widgets::Widget for Paragraph<'a> {
+impl<'a> tui::widgets::Widget for TextArea<'a> {
     fn render(self, area: Rect, buf: &mut tui::buffer::Buffer) {
         let paragraph_block = Block::default()
             .borders(Borders::ALL)
