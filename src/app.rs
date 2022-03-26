@@ -1,3 +1,5 @@
+use crate::widgets::paragraph::Paragraph;
+
 use crossterm::{
     event::{
         self,
@@ -14,8 +16,6 @@ use crossterm::{
     },
 };
 
-use crate::widgets::paragraph::Paragraph;
-
 use tui::{
     backend::{
         Backend,
@@ -28,7 +28,6 @@ use tui::{
 pub struct App {
     text: crate::text::Text,
 }
-
 pub type AppError = std::boxed::Box<dyn std::error::Error>;
 
 impl App {
