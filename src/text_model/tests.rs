@@ -84,3 +84,58 @@ fn leading_whitespace_trimmed() {
     let data = data::Data::from_string(file_str).unwrap();
     assert_eq!(data.text, "Dredd".to_string());
 }
+
+#[derive(Default)]
+struct TestObserver {
+    events: Vec<Event>,
+}
+
+impl Observer for TestObserver {
+    fn notify(&mut self, event: &Event) {
+        self.events.push(event.clone());
+    }
+}
+
+#[test]
+fn observer_is_notified_on_typed_character() {
+    use std::{
+        cell::RefCell,
+        rc::Rc,
+    };
+    let observer = Rc::<RefCell::<TestObserver>>::new(RefCell::<TestObserver>::new(Default::default()));
+    let file_str = "<klata_text><text>wah-blow</text></klata_text>";
+    let mut text = TextModel::from_string(file_str).unwrap();
+    let weak = Rc::downgrade(&observer);
+    text.register_observer(weak);
+
+    text.type_character('w');
+    
+    assert_eq!(
+        observer.borrow().events, 
+        vec![Event::Type(('w', CharacterStatus::Correct))]
+    );
+}
+
+#[test]
+fn observer_is_notified_on_backspace() {
+    use std::{
+        cell::RefCell,
+        rc::Rc,
+    };
+    let observer = Rc::<RefCell::<TestObserver>>::new(RefCell::<TestObserver>::new(Default::default()));
+    let file_str = "<klata_text><text>wah-blow</text></klata_text>";
+    let mut text = TextModel::from_string(file_str).unwrap();
+    let weak = Rc::downgrade(&observer);
+    text.register_observer(weak);
+
+    text.type_character('x');
+    text.backspace();
+    
+    assert_eq!(
+        observer.borrow().events, 
+        vec![
+            Event::Type(('x', CharacterStatus::Wrong)),
+            Event::Backspace
+        ]
+    );
+}

@@ -1,8 +1,12 @@
+#![feature(drain_filter)]
+
 use clap::Parser;
 use std::io;
 
 mod app;
 mod cli;
+mod db;
+mod data_capture;
 mod text_model;
 mod widgets;
 

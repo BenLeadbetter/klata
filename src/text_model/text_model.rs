@@ -1,9 +1,10 @@
+use serde::{ Serialize, Deserialize, };
 use std::{
     boxed::Box,
     error::Error,
 };
 
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 pub enum CharacterStatus {
     Untyped,
     Correct,
@@ -59,12 +60,23 @@ impl Character {
     }
 }
 
+#[derive(Clone, Debug, PartialEq)]
+pub enum Event {
+    Backspace,
+    Type((char, CharacterStatus)),
+}
+
+pub trait Observer {
+    fn notify(&mut self, event: &Event);
+}
+
 #[derive(Default)]
 pub struct TextModel {
     buffer: Vec<Character>,
     cursor: usize,
     _author: Option<String>,
     _date: Option<[u16;3]>,
+    observers: Vec<std::rc::Weak<std::cell::RefCell<dyn Observer>>>,
 }
 
 impl TextModel {
@@ -77,6 +89,7 @@ impl TextModel {
             cursor, 
             _author: data.author, 
             _date: data.date,
+            observers: Vec::new(),
         })
     }
 
@@ -93,6 +106,9 @@ impl TextModel {
             return;
         }
         self.buffer[self.cursor].attempt(c);
+        self.notify_observers(
+            Event::Type((c, self.buffer[self.cursor].status()))
+        );
         self.cursor = self.cursor + 1;
     }
 
@@ -102,5 +118,24 @@ impl TextModel {
         }
         self.cursor -= 1;
         self.buffer[self.cursor].erase();
+        self.notify_observers(Event::Backspace{});
+    }
+
+    pub fn register_observer(
+        &mut self, observer: 
+        std::rc::Weak<std::cell::RefCell<dyn Observer>>
+    ) {
+        self.observers.push(observer);
+    }
+    
+    fn notify_observers(&mut self, event: Event) {
+        self.observers.drain_filter(|o| o.upgrade().is_none());
+        for observer in self.observers.iter() {
+            observer
+                .upgrade()
+                .unwrap()
+                .borrow_mut()
+                .notify(&event);
+        }
     }
 }
