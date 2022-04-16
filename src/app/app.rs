@@ -1,11 +1,9 @@
-use crate::widgets::text_area::TextArea;
+use crate::app::states;
 
 use crossterm::{
     event::{
         self,
         DisableMouseCapture,
-        Event,
-        KeyCode,
     },
     execute,
     terminal::{
@@ -18,54 +16,39 @@ use crossterm::{
 
 use tui::{
     backend::{
-        Backend,
         CrosstermBackend,
     },
-    Frame,
     Terminal,
 };
 
-pub struct App {
-    text: crate::text_model::TextModel,
+pub struct App<W>
+where W: std::io::Write {
+    state: std::boxed::Box<dyn states::State<CrosstermBackend<W>>>,
 }
 pub type AppError = std::boxed::Box<dyn std::error::Error>;
 
-impl App {
+impl<W> App<W>
+where W: std::io::Write {
     pub fn from_file<P: AsRef<std::path::Path>>(
         path: P,
-    ) -> Result<App, AppError> {
+    ) -> Result<App<W>, AppError> {
         let file_content = std::str::from_utf8(&std::fs::read(path)?)?.to_string();
-        Ok(App {
-            text: crate::text_model::TextModel::from_string(file_content),
+        Ok(App::<W>{
+            state: std::boxed::Box::new(states::Typing::new(file_content)),
         })
     }
 
-    pub fn run<W: std::io::Write>(mut self, buffer: W) -> Result<(), AppError> {
-            let mut terminal = create_terminal(buffer)?;
+    pub fn run(mut self, buffer: W) -> Result<(), AppError> {
+        let mut terminal = create_terminal(buffer)?;
         loop {
-            terminal.draw(|f| self.ui(f))?;
-            let event = event::read()?;
-            match event  {
-                Event::Key(key) => match key.code {
-                    KeyCode::Esc => { break; },
-                    KeyCode::Char(c) => {
-                        self.text.type_character(c);
-                    },
-                    KeyCode::Backspace => { 
-                        self.text.backspace();
-                    }
-                    _ => {},
-
-                },
-                _ => {}
+            terminal.draw(|f| self.state.ui(f))?;
+            self.state = self.state.handle_event(event::read()?);
+            if self.state.terminate() {
+                break;
             }
         }
         teardown_terminal(terminal)?;
         Ok(())
-    }
-
-    fn ui<B: Backend>(&self, f: &mut Frame<B>) {
-        f.render_widget(TextArea::new(&self.text), f.size());
     }
 }
 

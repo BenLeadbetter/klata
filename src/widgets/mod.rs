@@ -1,1 +1,4 @@
-pub mod text_area;
+mod text_area;
+
+pub use text_area::TextArea;
+

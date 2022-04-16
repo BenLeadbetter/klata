@@ -55,6 +55,7 @@ impl Character {
     }
 }
 
+#[derive(Default)]
 pub struct TextModel {
     buffer: Vec<Character>,
     cursor: usize,
