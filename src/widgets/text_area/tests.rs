@@ -5,7 +5,7 @@ use tui::widgets::Widget;
 fn paragraph_from_empty_text_renders_empty_framed_block() {
     let text = text_model::TextModel::from_string("".to_string());
     let paragraph = TextArea::new(&text);
-    
+
     let rect = tui::layout::Rect {
         width: 4,
         height: 4,
@@ -13,7 +13,7 @@ fn paragraph_from_empty_text_renders_empty_framed_block() {
     };
     let mut buffer = tui::buffer::Buffer::empty(rect.clone());
     paragraph.render(rect.clone(), &mut buffer);
-    
+
     let mut expected = tui::buffer::Buffer::empty(rect.clone());
     let framed_block = tui::widgets::Block::default()
         .borders(tui::widgets::Borders::ALL)
@@ -27,7 +27,7 @@ fn paragraph_from_empty_text_renders_empty_framed_block() {
 fn text_wraps_and_left_aligns() {
     let text = text_model::TextModel::from_string("I am".to_string());
     let paragraph = TextArea::new(&text);
-    
+
     let rect = tui::layout::Rect {
         width: 4,
         height: 4,
@@ -35,7 +35,7 @@ fn text_wraps_and_left_aligns() {
     };
     let mut buffer = tui::buffer::Buffer::empty(rect.clone());
     paragraph.render(rect.clone(), &mut buffer);
-    
+
     assert_eq!(buffer.content[5].symbol, "I".to_string());
     assert_eq!(buffer.content[6].symbol, " ".to_string());
     assert_eq!(buffer.content[9].symbol, "a".to_string());
@@ -46,7 +46,7 @@ fn text_wraps_and_left_aligns() {
 fn untyped_text_rendered_grey() {
     let text = text_model::TextModel::from_string("I am".to_string());
     let paragraph = TextArea::new(&text);
-    
+
     let rect = tui::layout::Rect {
         width: 4,
         height: 4,
@@ -54,7 +54,7 @@ fn untyped_text_rendered_grey() {
     };
     let mut buffer = tui::buffer::Buffer::empty(rect.clone());
     paragraph.render(rect.clone(), &mut buffer);
-    
+
     assert_eq!(buffer.content[5].fg, tui::style::Color::DarkGray);
     assert_eq!(buffer.content[9].fg, tui::style::Color::DarkGray);
     assert_eq!(buffer.content[10].fg, tui::style::Color::DarkGray);
@@ -66,7 +66,7 @@ fn incorrect_text_rendered_red() {
     text.type_character('x');
 
     let paragraph = TextArea::new(&text);
-    
+
     let rect = tui::layout::Rect {
         width: 4,
         height: 4,
@@ -74,7 +74,7 @@ fn incorrect_text_rendered_red() {
     };
     let mut buffer = tui::buffer::Buffer::empty(rect.clone());
     paragraph.render(rect.clone(), &mut buffer);
-    
+
     assert_eq!(buffer.content[5].fg, tui::style::Color::Red);
 }
 
@@ -86,7 +86,7 @@ fn corrected_text_rendered_green() {
     text.type_character('I');
 
     let paragraph = TextArea::new(&text);
-    
+
     let rect = tui::layout::Rect {
         width: 4,
         height: 4,
@@ -94,7 +94,7 @@ fn corrected_text_rendered_green() {
     };
     let mut buffer = tui::buffer::Buffer::empty(rect.clone());
     paragraph.render(rect.clone(), &mut buffer);
-    
+
     assert_eq!(buffer.content[5].fg, tui::style::Color::Green);
 }
 
@@ -102,7 +102,7 @@ fn corrected_text_rendered_green() {
 fn cursor_rendered_white_bg_grey_fg() {
     let text = text_model::TextModel::from_string("I am".to_string());
     let paragraph = TextArea::new(&text);
-    
+
     let rect = tui::layout::Rect {
         width: 4,
         height: 4,
@@ -110,11 +110,10 @@ fn cursor_rendered_white_bg_grey_fg() {
     };
     let mut buffer = tui::buffer::Buffer::empty(rect.clone());
     paragraph.render(rect.clone(), &mut buffer);
-    
+
     assert_eq!(buffer.content[5].fg, tui::style::Color::DarkGray);
     assert_eq!(buffer.content[5].bg, tui::style::Color::White);
 }
-
 
 #[test]
 fn correctly_type_text_text_is_rendered_white() {
@@ -124,7 +123,7 @@ fn correctly_type_text_text_is_rendered_white() {
     text.type_character('a');
     text.type_character('m');
     let paragraph = TextArea::new(&text);
-    
+
     let rect = tui::layout::Rect {
         width: 4,
         height: 4,
@@ -132,7 +131,7 @@ fn correctly_type_text_text_is_rendered_white() {
     };
     let mut buffer = tui::buffer::Buffer::empty(rect.clone());
     paragraph.render(rect.clone(), &mut buffer);
-    
+
     assert_eq!(buffer.content[5].fg, tui::style::Color::White);
     assert_eq!(buffer.content[9].fg, tui::style::Color::White);
     assert_eq!(buffer.content[10].fg, tui::style::Color::White);

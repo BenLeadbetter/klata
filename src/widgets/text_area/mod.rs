@@ -4,10 +4,10 @@ mod tests;
 use crate::text_model;
 
 use tui::{
-    layout::{ Alignment, Rect, },
-    text::{ Span, Spans, },
-    style::{ Color, Style, },
-    widgets::{ self, Block, Borders, BorderType, Wrap,},
+    layout::{Alignment, Rect},
+    style::{Color, Style},
+    text::{Span, Spans},
+    widgets::{self, Block, BorderType, Borders, Wrap},
 };
 
 pub struct TextArea<'a> {
@@ -18,12 +18,11 @@ impl<'a> TextArea<'a> {
     pub fn new(text: &text_model::TextModel) -> TextArea<'a> {
         TextArea {
             characters: Spans::<'a>::from(
-                text
-                    .characters()
+                text.characters()
                     .enumerate()
                     .map(|(i, c)| to_styled_char(c.value(), c.status(), i == text.cursor()))
                     .collect::<Vec<_>>(),
-            )
+            ),
         }
     }
 }
@@ -32,10 +31,10 @@ fn to_styled_char<'a>(c: char, status: text_model::CharacterStatus, is_cursor: b
     Span {
         style: Style {
             fg: match status {
-                text_model::CharacterStatus::Untyped => { Some(Color::DarkGray) },
-                text_model::CharacterStatus::Correct => { Some(Color::White) },
-                text_model::CharacterStatus::Corrected => { Some(Color::Green) },
-                text_model::CharacterStatus::Wrong => { Some(Color::Red) },
+                text_model::CharacterStatus::Untyped => Some(Color::DarkGray),
+                text_model::CharacterStatus::Correct => Some(Color::White),
+                text_model::CharacterStatus::Corrected => Some(Color::Green),
+                text_model::CharacterStatus::Wrong => Some(Color::Red),
             },
             bg: {
                 if is_cursor {
