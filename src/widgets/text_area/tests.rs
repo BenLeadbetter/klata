@@ -1,9 +1,19 @@
 use super::*;
 use tui::widgets::Widget;
 
+fn empty_text_model() -> text_model::TextModel {
+    let empty_file_str = "<klata_text><text></text></klata_text>";
+    text_model::TextModel::from_string(empty_file_str).unwrap()
+}
+
+fn make_text_model() -> text_model::TextModel {
+    let file_str = "<klata_text><text>I am</text></klata_text>";
+    text_model::TextModel::from_string(file_str).unwrap()
+}
+
 #[test]
 fn paragraph_from_empty_text_renders_empty_framed_block() {
-    let text = text_model::TextModel::from_string("".to_string());
+    let text = empty_text_model();
     let paragraph = TextArea::new(&text);
 
     let rect = tui::layout::Rect {
@@ -25,7 +35,7 @@ fn paragraph_from_empty_text_renders_empty_framed_block() {
 
 #[test]
 fn text_wraps_and_left_aligns() {
-    let text = text_model::TextModel::from_string("I am".to_string());
+    let text = make_text_model();
     let paragraph = TextArea::new(&text);
 
     let rect = tui::layout::Rect {
@@ -44,7 +54,7 @@ fn text_wraps_and_left_aligns() {
 
 #[test]
 fn untyped_text_rendered_grey() {
-    let text = text_model::TextModel::from_string("I am".to_string());
+    let text = make_text_model();
     let paragraph = TextArea::new(&text);
 
     let rect = tui::layout::Rect {
@@ -62,7 +72,7 @@ fn untyped_text_rendered_grey() {
 
 #[test]
 fn incorrect_text_rendered_red() {
-    let mut text = text_model::TextModel::from_string("I am".to_string());
+    let mut text = make_text_model();
     text.type_character('x');
 
     let paragraph = TextArea::new(&text);
@@ -80,7 +90,7 @@ fn incorrect_text_rendered_red() {
 
 #[test]
 fn corrected_text_rendered_green() {
-    let mut text = text_model::TextModel::from_string("I am".to_string());
+    let mut text = make_text_model();
     text.type_character('x');
     text.backspace();
     text.type_character('I');
@@ -100,7 +110,7 @@ fn corrected_text_rendered_green() {
 
 #[test]
 fn cursor_rendered_white_bg_grey_fg() {
-    let text = text_model::TextModel::from_string("I am".to_string());
+    let text = make_text_model();
     let paragraph = TextArea::new(&text);
 
     let rect = tui::layout::Rect {
@@ -117,7 +127,7 @@ fn cursor_rendered_white_bg_grey_fg() {
 
 #[test]
 fn correctly_type_text_text_is_rendered_white() {
-    let mut text = text_model::TextModel::from_string("I am".to_string());
+    let mut text = make_text_model();
     text.type_character('I');
     text.type_character(' ');
     text.type_character('a');

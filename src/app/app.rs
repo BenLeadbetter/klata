@@ -23,7 +23,7 @@ where
     pub fn from_file<P: AsRef<std::path::Path>>(path: P) -> Result<App<W>, AppError> {
         let file_content = std::str::from_utf8(&std::fs::read(path)?)?.to_string();
         Ok(App::<W> {
-            state: std::boxed::Box::new(states::Typing::new(file_content)),
+            state: std::boxed::Box::new(states::Typing::new(&file_content)?),
         })
     }
 

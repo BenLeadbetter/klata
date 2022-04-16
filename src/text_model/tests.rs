@@ -47,14 +47,40 @@ fn incorrectly_reattempted_character_is_wrong() {
 }
 
 #[test]
-fn text_from_string_with_directed_speech_marks_neutralised() {
-    let text = TextModel::from_string("\u{201c}Hello, World!\u{201d}".to_string());
-    assert_eq!(text.buffer[0].value(), '\u{0022}');
-    assert_eq!(text.buffer[14].value(), '\u{0022}');
+fn plain_alphanumeric_is_valid() {
+    let file_str = "<klata_text><text>Hello World</text></klata_text>";
+    let _ = data::Data::from_string(file_str).unwrap();
 }
 
 #[test]
-fn text_from_string_with_directed_apostrophes_neutralised() {
-    let text = TextModel::from_string("Ben\u{2019}s".to_string());
-    assert_eq!(text.buffer[3].value(), '\'');
+fn text_with_punctuation_is_valid() {
+    let file_str = "<klata_text><text>#e(lo, W*rld!?</text></klata_text>";
+    let _ = data::Data::from_string(file_str).unwrap();
+}
+
+#[test]
+fn text_with_line_breaks_is_valid() {
+    let file_str = "<klata_text><text>Hello\nWorld</text></klata_text>";
+    let _ = data::Data::from_string(file_str).unwrap();
+}
+
+#[test]
+fn text_with_directed_speech_marks_not_valid() {
+    let file_str = "<klata_text><text>\u{201c}</text></klata_text>";
+    let data = data::Data::from_string(file_str);
+    assert_eq!(&format!("{}",data.unwrap_err()), "Unsupported character '\u{201c}'")
+}
+
+#[test]
+fn text_with_directed_apostrophes_not_valid() {
+    let file_str = "<klata_text><text>Ben\u{2019}s</text></klata_text>";
+    let data = data::Data::from_string(file_str);
+    assert_eq!(&format!("{}",data.unwrap_err()), "Unsupported character '\u{2019}'")
+}
+
+#[test]
+fn leading_whitespace_trimmed() {
+    let file_str = "<klata_text><text> Dredd</text></klata_text>";
+    let data = data::Data::from_string(file_str).unwrap();
+    assert_eq!(data.text, "Dredd".to_string());
 }
