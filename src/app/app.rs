@@ -1,39 +1,28 @@
 use crate::app::states;
 
 use crossterm::{
-    event::{
-        self,
-        DisableMouseCapture,
-    },
+    event::{self, DisableMouseCapture},
     execute,
-    terminal::{
-        disable_raw_mode,
-        enable_raw_mode,
-        EnterAlternateScreen,
-        LeaveAlternateScreen,
-    },
+    terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
 
-use tui::{
-    backend::{
-        CrosstermBackend,
-    },
-    Terminal,
-};
+use tui::{backend::CrosstermBackend, Terminal};
 
 pub struct App<W>
-where W: std::io::Write {
+where
+    W: std::io::Write,
+{
     state: std::boxed::Box<dyn states::State<CrosstermBackend<W>>>,
 }
 pub type AppError = std::boxed::Box<dyn std::error::Error>;
 
 impl<W> App<W>
-where W: std::io::Write {
-    pub fn from_file<P: AsRef<std::path::Path>>(
-        path: P,
-    ) -> Result<App<W>, AppError> {
+where
+    W: std::io::Write,
+{
+    pub fn from_file<P: AsRef<std::path::Path>>(path: P) -> Result<App<W>, AppError> {
         let file_content = std::str::from_utf8(&std::fs::read(path)?)?.to_string();
-        Ok(App::<W>{
+        Ok(App::<W> {
             state: std::boxed::Box::new(states::Typing::new(file_content)),
         })
     }
@@ -52,7 +41,9 @@ where W: std::io::Write {
     }
 }
 
-fn create_terminal<W: std::io::Write>(mut buffer: W) -> Result<Terminal<CrosstermBackend<W>>, std::io::Error> {
+fn create_terminal<W: std::io::Write>(
+    mut buffer: W,
+) -> Result<Terminal<CrosstermBackend<W>>, std::io::Error> {
     enable_raw_mode()?;
     execute!(buffer, EnterAlternateScreen)?;
     let backend = CrosstermBackend::new(buffer);
@@ -60,7 +51,7 @@ fn create_terminal<W: std::io::Write>(mut buffer: W) -> Result<Terminal<Crosster
 }
 
 fn teardown_terminal<W: std::io::Write>(
-    mut terminal: Terminal<CrosstermBackend<W>>
+    mut terminal: Terminal<CrosstermBackend<W>>,
 ) -> Result<(), std::io::Error> {
     disable_raw_mode()?;
     execute!(
