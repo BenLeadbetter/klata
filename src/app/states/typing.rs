@@ -2,7 +2,10 @@ use super::{Finished, State};
 use crate::text_model::TextModel;
 use crate::widgets::TextArea;
 use crossterm::event::{Event, KeyCode};
-use std::boxed::Box;
+use std::{
+    boxed::Box,
+    error::Error,
+};
 
 #[derive(Default)]
 pub struct Typing {
@@ -10,10 +13,10 @@ pub struct Typing {
 }
 
 impl Typing {
-    pub fn new(content: String) -> Typing {
-        Typing {
-            text_model: Some(TextModel::from_string(content)),
-        }
+    pub fn new(text_file_content: &str) -> Result<Typing, Box<dyn Error>> {
+        Ok(Typing {
+            text_model: Some(TextModel::from_string(text_file_content)?),
+        })
     }
     fn take(&mut self) -> Typing {
         Typing {
