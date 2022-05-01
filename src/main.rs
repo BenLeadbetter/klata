@@ -1,5 +1,3 @@
-#![feature(drain_filter)]
-
 use clap::Parser;
 use std::io;
 

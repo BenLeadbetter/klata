@@ -129,7 +129,10 @@ impl TextModel {
     }
     
     fn notify_observers(&mut self, event: Event) {
-        self.observers.drain_filter(|o| o.upgrade().is_none());
+        self.observers = std::mem::take(&mut self.observers)
+            .into_iter()
+            .filter(|o| o.upgrade().is_some())
+            .collect();
         for observer in self.observers.iter() {
             observer
                 .upgrade()
